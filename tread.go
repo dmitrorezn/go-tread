@@ -1,7 +1,7 @@
 package tread
 
 import (
-	"fmt"
+	"errors"
 	"sync"
 	"sync/atomic"
 )
@@ -28,9 +28,11 @@ func (t *Tread) SpotAndWait() {
 	t.wg.Wait()
 }
 
+var ErrTreadClose = errors.New("tread closed already")
+
 func (t *Tread) Go(fn func()) error {
 	if t.closed.Load() {
-		return fmt.Errorf("tread closed already")
+		return ErrTreadClose
 	}
 	t.wg.Add(1)
 	go func() {
@@ -40,4 +42,3 @@ func (t *Tread) Go(fn func()) error {
 
 	return nil
 }
-
